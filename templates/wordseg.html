@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Segmentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #2c3e50; /* Dark background color */
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 3em; /* Larger font size */
+            color: #ecf0f1; /* Light text color for mystery */
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        label, input, button {
+            width: 100%;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 15px;
+            background-color: #34495e; /* Darker button color */
+            color: #ecf0f1; /* Light text color */
+            border: none;
+            border-radius: 10px; /* Larger border radius */
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #3b5998; /* Slightly different hover color */
+        }
+        .response {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #34495e; /* Darker background color */
+            color: #ecf0f1; /* Light text color */
+            border-radius: 10px; /* Larger border radius */
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+        }
+        .buttons a, .buttons button {
+            width: 48%;
+            text-align: center;
+        }
+        a {
+            text-decoration: none;
+        }
+        .buttons a button {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Word Segmentation API</h1>
+    <form method="POST">
+        <input type="text" id="text" name="text" required>
+        <button type="submit">Submit</button>
+    </form>
+    {% if result %}
+        <div class="response">
+            <h2>Response:</h2>
+            <p>{{ result }}</p>
+        </div>
+    {% endif %}
+    <div class="buttons">
+        <a href="/"><button type="button">Back to Home</button></a>
+        <button type="submit">Submit</button>
+    </div>
+</body>
+</html>

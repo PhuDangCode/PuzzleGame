@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Puzzle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #2c3e50; /* Dark background color */
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 3em; /* Larger font size */
+            color: #ecf0f1; /* Light text color for mystery */
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        label, input, button {
+            width: 100%;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 15px;
+            background-color: #34495e; /* Darker button color */
+            color: #ecf0f1; /* Light text color */
+            border: none;
+            border-radius: 10px; /* Larger border radius */
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #3b5998; /* Slightly different hover color */
+        }
+        .response {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #34495e; /* Darker background color */
+            color: #ecf0f1; /* Light text color */
+            border-radius: 10px; /* Larger border radius */
+            text-align: center; /* Center the feedback */
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+        }
+        .buttons a, .buttons button {
+            width: 32%;
+            text-align: center;
+        }
+        a {
+            text-decoration: none;
+        }
+        .buttons a button {
+            width: 100%;
+        }
+        .keyboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 400px;
+            margin-top: 20px;
+        }
+        .key {
+            width: 40px;
+            height: 40px;
+            margin: 5px;
+            background-color: #34495e;
+            color: #ecf0f1;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            text-align: center;
+            line-height: 40px;
+        }
+        .key:hover {
+            background-color: #3b5998;
+        }
+        .letter {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            margin: 5px;
+            text-align: center;
+            font-size: 1.5em;
+            border-radius: 5px;
+        }
+        .absent {
+            background-color: red;
+            color: white;
+        }
+        .present {
+            background-color: yellow;
+            color: black;
+        }
+        .correct {
+            background-color: green;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Daily Puzzle</h1>
+    <form method="POST">
+        <input type="text" id="guess" name="guess" required>
+        <div class="buttons">
+            <button type="button" id="auto-solve">Auto Solve</button>
+            <button type="submit">Submit</button>
+            <a href="/"><button type="button">Back</button></a>
+        </div>
+    </form>
+    <div class="response">
+        {% if feedback %}
+            <h2>Feedback:</h2>
+            <div id="feedback-container">
+                {% for letter in feedback %}
+                    <span class="letter {% if letter.result == 'absent' %}absent{% elif letter.result == 'present' %}present{% elif letter.result == 'correct' %}correct{% endif %}">
+                        {{ letter.guess }}
+                    </span>
+                {% endfor %}
+            </div>
+        {% elif error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
+    <script>
+        async function autoSolve() {
+            try {
+                const response = await fetch('/auto_solve', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ size: 5 }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    alert('Error: ' + error.error);
+                    return;
+                }
+
+                const result = await response.json();
+                const { guess, feedback, solved } = result;
+
+                // Ensure feedback container exists
+                let feedbackContainer = document.querySelector('#feedback-container');
+                if (!feedbackContainer) {
+                    feedbackContainer = document.createElement('div');
+                    feedbackContainer.id = 'feedback-container';
+                    document.querySelector('.response').appendChild(feedbackContainer);
+                }
+
+                // Update feedback dynamically
+                feedbackContainer.innerHTML = `
+                    <h2></h2>
+                    <div>
+                        ${feedback
+                            .map(
+                                letter =>
+                                    `<span class="letter ${letter.result}">${letter.guess}</span>`
+                            )
+                            .join('')}
+                    </div>
+                `;
+
+                if (solved) {
+                    alert(`Solved! The word is "${guess}".`);
+                }
+            } catch (error) {
+                console.error('Unexpected error:', error);
+                alert('Unexpected error occurred: ' + error.message);
+            }
+        }
+
+        document.getElementById('auto-solve').addEventListener('click', autoSolve);
+    </script>
+</body>
+</html>
